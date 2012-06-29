@@ -13,8 +13,43 @@ objectdef treeref
 	}
 }
 
+objectdef obj_ShaTree
+{
+	variable filepath CONFIG_PATH = "${Script.CurrentDirectory}/combot/config"
+	variable string CONFIG_FILE = "ShaTree.xml"
+	variable settingsetref BaseRef
+
+	method Initialize()
+	{
+		LavishSettings[ShaTree]:Clear
+		LavishSettings:AddSet[ShaTree]
+
+
+		if !${CONFIG_PATH.FileExists["${CONFIG_PATH}/${CONFIG_FILE}"]}
+		{
+			UI:Update["obj_Configuration", "Configuration file is ${CONFIG_FILE}", "g"]
+			LavishSettings[ShaTree]:Import["${CONFIG_PATH}/${CONFIG_FILE}"]
+		}
+
+		BaseRef:Set[${LavishSettings[ShaTree]}]
+	}
+
+	method Shutdown()
+	{
+		This:Save[]
+		LavishSettings[ShaTree]:Clear
+	}
+
+	method Save()
+	{
+		LavishSettings[ShaTree]:Export["${CONFIG_PATH}/${CONFIG_FILE}"]
+	}
+	
+}
+
 variable queue:treeref Trees
 variable queue:treeref Files
+variable obj_ShaTree ShaTree
 
 function main()
 {
@@ -29,13 +64,22 @@ function main()
 	{
 		wait 10
 	}
+	ShaTree:Save
 	run combot/combot
 }
 
 atom(script) GetRef(JSONNode ref)
 {
-	NextState
-	HTTPSGetJSON ${ref[object].Node[url].Value}
+	if ${ref[object].Node[sha].Value.Equal[${ShaTree.BaseRef.FindSetting[CommitSha]}]}
+	{
+		Updated:Set[TRUE]
+	}
+	else
+	{
+		ShaTree.BaseRef.AddSetting[CommitSha, "${ref[object].Node[sha].Value}"]
+		NextState
+		HTTPSGetJSON ${ref[object].Node[url].Value}
+	}
 }
 
 atom(script) GetCommit(JSONNode commit)

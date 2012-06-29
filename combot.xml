@@ -1,0 +1,16 @@
+<Manifest>
+       <Project>
+               <Name>Combot Patcher</Name>
+               <Author>Vendan</Author>
+       </Project>
+	<FileInfo>
+		<filename>LavishScript Modules/LSMHttp.dll</filename>
+		<url>https://github.com/VendanAndrews/LSMHttp/raw/master/Release/LSMHttp.dll</url>
+		<version>20121625</version>
+	</FileInfo>
+	<FileInfo>
+		<filename>Scripts/combot.iss</filename>
+		<url>https://github.com/VendanAndrews/CombotPatcher/raw/master/combot.iss</url>
+		<version>20121625</version>
+	</FileInfo>
+</Manifest>
