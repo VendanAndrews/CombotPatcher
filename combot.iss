@@ -76,7 +76,7 @@ atom(script) GetRef(JSONNode ref)
 	}
 	else
 	{
-		ShaTree.BaseRef.AddSetting[CommitSha, "${ref[object].Node[sha].Value}"]
+		ShaTree.BaseRef:AddSetting[CommitSha, "${ref[object].Node[sha].Value}"]
 		NextState
 		HTTPSGetJSON ${ref[object].Node[url].Value}
 	}
