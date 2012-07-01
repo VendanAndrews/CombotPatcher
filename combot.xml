@@ -6,11 +6,16 @@
 	<FileInfo>
 		<filename>LavishScript Modules/LSMHttp.dll</filename>
 		<url>https://github.com/VendanAndrews/LSMHttp/raw/master/Release/LSMHttp.dll</url>
-		<version>20121625</version>
+		<version>20120701</version>
+	</FileInfo>
+	<FileInfo>
+		<filename>libcurl.dll</filename>
+		<url>https://github.com/VendanAndrews/LSMHttp/raw/master/Release/libcurl.dll</url>
+		<version>20120701</version>
 	</FileInfo>
 	<FileInfo>
 		<filename>Scripts/combot.iss</filename>
 		<url>https://github.com/VendanAndrews/CombotPatcher/raw/master/combot.iss</url>
-		<version>20121625</version>
+		<version>20120701</version>
 	</FileInfo>
 </Manifest>
