@@ -4,18 +4,15 @@
                <Author>Vendan</Author>
        </Project>
 	<FileInfo>
-		<filename>LavishScript Modules/LSMHttp.dll</filename>
-		<url>https://github.com/VendanAndrews/LSMHttp/raw/master/Release/LSMHttp.dll</url>
-		<version>20120701</version>
-	</FileInfo>
-	<FileInfo>
-		<filename>libcurl.dll</filename>
-		<url>https://github.com/VendanAndrews/LSMHttp/raw/master/Release/libcurl.dll</url>
-		<version>20120701</version>
+		<filename>.Net Programs/GithubPatcher.exe</filename>
+		<url>https://github.com/VendanAndrews/GithubPatcher/raw/master/bin/Release/GithubPatcher.exe</url>
+		<version>20120703</version>
+		<PerformBackup>0</PerformBackup>
 	</FileInfo>
 	<FileInfo>
 		<filename>Scripts/combot.iss</filename>
 		<url>https://github.com/VendanAndrews/CombotPatcher/raw/master/combot.iss</url>
-		<version>20120701</version>
+		<version>20120703</version>
+		<PerformBackup>0</PerformBackup>
 	</FileInfo>
 </Manifest>
