@@ -12,12 +12,15 @@ function main()
 atom(globalkeep) Github_Patched(bool updated)
 {
 	dotnet ComBotPatcher GithubPatcher.exe VendanAndrews CombotPatcher master/ComBot.iss Scripts ComBotPatcher_Patched
+	Event[Github_Patched]:DetachAtom[Github_Patched]
 }
 
 atom(globalkeep) ComBotPatcher_Patched(bool updated)
 {
+	Event[ComBotPatcher_Patched]:DetachAtom[ComBotPatcher_Patched]
 	if ${updated}
 	{
+		Event[ComBot_Patched]:DetachAtom[Combot_Patched]
 		run combot
 	}
 	else
@@ -30,4 +33,5 @@ atom(globalkeep) Combot_Patched()
 {
 	echo Launching ComBot
 	run combot/combot
+	Event[ComBot_Patched]:DetachAtom[ComBot_Patched]
 }
