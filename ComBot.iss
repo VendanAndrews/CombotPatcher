@@ -9,14 +9,21 @@ function main()
 	dotnet GithubPatcher GithubPatcher.exe VendanAndrews GithubPatcher master/bin/Release ".NET Programs" Github_Patched
 }
 
-atom(globalkeep) Github_Patched()
+atom(globalkeep) Github_Patched(bool updated)
 {
 	dotnet ComBotPatcher GithubPatcher.exe VendanAndrews CombotPatcher master/ComBot.iss Scripts ComBotPatcher_Patched
 }
 
-atom(globalkeep) ComBotPatcher_Patched()
+atom(globalkeep) ComBotPatcher_Patched(bool updated)
 {
-	dotnet ComBot GithubPatcher.exe Tehtsuo Combot experimental Scripts/Combot ComBot_Patched
+	if ${updated}
+	{
+		run combot
+	}
+	else
+	{
+		dotnet ComBot GithubPatcher.exe Tehtsuo Combot experimental Scripts/Combot ComBot_Patched
+	}
 }
 
 atom(globalkeep) Combot_Patched()
