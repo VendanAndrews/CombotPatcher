@@ -1,37 +1,51 @@
+objectdef package
+{
+	variable string Name
+	variable string Path
+	variable string User
+	variable string Ref
+	method Initialize(string argName, string argPath, string argUser, string argRef)
+	{
+		Name:Set[${argName.Escape}]
+		Path:Set[${argPath.Escape}]
+		User:Set[${argUser.Escape}]
+		Ref:Set[${argRef.Escape}]
+	}
+}
+
+variable(globalkeep) queue:string Packages
+
 function main()
 {
-	LavishScript:RegisterEvent[Github_Patched]
-	Event[Github_Patched]:AttachAtom[Github_Patched]
-	LavishScript:RegisterEvent[ComBotPatcher_Patched]
-	Event[ComBotPatcher_Patched]:AttachAtom[ComBotPatcher_Patched]
-	LavishScript:RegisterEvent[ComBot_Patched]
-	Event[ComBot_Patched]:AttachAtom[ComBot_Patched]
-	dotnet GithubPatcher GithubPatcher.exe VendanAndrews GithubPatcher master/bin/Release ".NET Programs" Github_Patched
+	Packages:Clear
+	Packages:Queue["GithubPatcher", ".NET Programs", "VendanAndrews", "master/bin/Release"]
+	Packages:Queue["CombotPatcher", "Scripts", "VendanAndrews", "master/ComBot.iss"]
+	Packages:Queue["LSMIPC", "LavishScript Modules", "VendanAndrews", "master/bin/Release"]
+	Packages:Queue["GithubPatcher", "Scripts/Combot", "Tehtsuo", "experimental"]
+	LavishScript:RegisterEvent[Patched]
+	Event[Patched]:AttachAtom[Patched]
+	dotnet ${Packages.Peek.Name} GithubPatcher.exe ${Packages.Peek.User} ${Packages.Peek.Name} "${Packages.Peek.Ref.Escape}" "${Packages.Peek.Path.Escape}" Patched
 }
 
-atom(globalkeep) Github_Patched(bool updated)
+atom(globalkeep) Patched(bool updated)
 {
-	dotnet ComBotPatcher GithubPatcher.exe VendanAndrews CombotPatcher master/ComBot.iss Scripts ComBotPatcher_Patched
-	Event[Github_Patched]:DetachAtom[Github_Patched]
-}
-
-atom(globalkeep) ComBotPatcher_Patched(bool updated)
-{
-	Event[ComBotPatcher_Patched]:DetachAtom[ComBotPatcher_Patched]
-	if ${updated}
+	if ${Packages.Used} > 1
 	{
-		Event[ComBot_Patched]:DetachAtom[Combot_Patched]
-		run combot
+		if ${updated}
+		{
+			Event[Patched]:DetachAtom[Patched]
+			run combot
+		}
+		else
+		{
+			Packages:Dequeue
+			dotnet ${Packages.Peek.Name} GithubPatcher.exe ${Packages.Peek.User} ${Packages.Peek.Name} "${Packages.Peek.Ref.Escape}" "${Packages.Peek.Path.Escape}" Patched
+		}
 	}
 	else
 	{
-		dotnet ComBot GithubPatcher.exe Tehtsuo Combot experimental Scripts/Combot ComBot_Patched
+		echo Launching ComBot
+		Event[Patched]:DetachAtom[Patched]
+		run combot/combot
 	}
-}
-
-atom(globalkeep) Combot_Patched()
-{
-	echo Launching ComBot
-	run combot/combot
-	Event[ComBot_Patched]:DetachAtom[ComBot_Patched]
 }
