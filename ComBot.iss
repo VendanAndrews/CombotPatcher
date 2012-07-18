@@ -13,7 +13,7 @@ objectdef package
 	}
 }
 
-variable(globalkeep) queue:package Packages
+variable(globalkeep) queue:string Packages
 
 function main()
 {
