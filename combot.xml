@@ -4,8 +4,8 @@
                <Author>Vendan</Author>
        </Project>
 	<FileInfo>
-		<filename>.Net Programs/GithubPatcher.exe</filename>
-		<url>https://github.com/VendanAndrews/GithubPatcher/raw/master/bin/Release/GithubPatcher.exe</url>
+		<filename>.Net Programs/CombotPatcher.exe</filename>
+		<url>https://github.com/VendanAndrews/CombotPatcher/raw/master/bin/Release/CombotPatcher.exe</url>
 		<version>20120703</version>
 		<PerformBackup>0</PerformBackup>
 	</FileInfo>
