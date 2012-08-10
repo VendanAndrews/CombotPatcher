@@ -1,4 +1,4 @@
-function main()
+function main(string Branch="")
 {
-	dotnet CombotPatcher CombotPatcher.exe
+	dotnet CombotPatcher CombotPatcher.exe ${Branch}
 }

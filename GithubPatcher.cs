@@ -23,11 +23,6 @@ namespace CombotPatcher
 
         public static void Patch(string user, string repo, string tag, string path)
         {
-            if (InnerSpaceAPI.InnerSpace.BuildNumber == 0)
-            {
-                return;
-            }
-
             Queue<String> repoPaths;
             Updated = false;
 

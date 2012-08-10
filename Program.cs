@@ -16,10 +16,20 @@ namespace CombotPatcher
     {
         public static void Main(string[] args)
         {
+            if (InnerSpaceAPI.InnerSpace.BuildNumber == 0)
+            {
+                return;
+            }
+            if (args.Length == 1)
+            {
+                Properties.Settings.Default.CombotBranch = args[0];
+                Properties.Settings.Default.Save();
+            }
+
             GithubPatcher.Patch("VendanAndrews", "CombotPatcher", "master/bin/Release/CombotPatcher.exe", ".Net Programs");
             GithubPatcher.Patch("VendanAndrews", "CombotPatcher", "master/ComBot.iss", "Scripts");
             GithubPatcher.Patch("VendanAndrews", "LSMIPC", "master/Release/LSMIPC.dll", "LavishScript Modules");
-            GithubPatcher.Patch("Tehtsuo", "Combot", "experimental", @"Scripts\combot");
+            GithubPatcher.Patch("Tehtsuo", "Combot", Properties.Settings.Default.CombotBranch, @"Scripts\combot");
             LavishScript.ExecuteCommand("run combot/combot.iss");
 
         }
