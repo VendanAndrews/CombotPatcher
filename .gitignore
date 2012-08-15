@@ -5,7 +5,7 @@
 *.pydevproject
 .project
 .metadata
-bin/
+#bin/
 tmp/
 *.tmp
 *.bak
@@ -43,7 +43,13 @@ local.properties
 
 # Build results
 [Dd]ebug/
-[Rr]elease/
+#[Rr]elease/
+Properties/
+*.manifest
+*.vshost.exe
+*.dll
+*InnerSpace.xml
+*.config
 *_i.c
 *_p.c
 *.ilk
@@ -97,7 +103,7 @@ DocProject/Help/html
 publish
 
 # Others
-[Bb]in
+#[Bb]in
 [Oo]bj
 sql
 TestResults
@@ -140,7 +146,7 @@ dist
 build
 eggs
 parts
-bin
+#bin
 var
 sdist
 develop-eggs
