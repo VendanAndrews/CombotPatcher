@@ -9,6 +9,7 @@ using InnerSpaceAPI;
 using LavishScriptAPI;
 using LavishSettingsAPI;
 using LavishVMAPI;
+using NDesk.Options;
 
 namespace CombotPatcher
 {
@@ -20,17 +21,37 @@ namespace CombotPatcher
             {
                 return;
             }
-            if (args.Length == 1)
+
+            bool showhelp = false;
+
+            OptionSet p = new OptionSet() {
+                { "b|branch", v => {
+                    Properties.Settings.Default.CombotBranch = v;
+                    Properties.Settings.Default.Save(); } },
+                { "h|help",  "show this message and exit", 
+                    v => { showhelp = true; } },
+            };
+            
+            List<string> extra = p.Parse(args);
+
+            if (showhelp)
             {
-                Properties.Settings.Default.CombotBranch = args[0];
-                Properties.Settings.Default.Save();
+                MemoryStream desc = new MemoryStream();
+                p.WriteOptionDescriptions(new StreamWriter(desc));
+                InnerSpace.Echo(desc.ToString());
             }
+
 
             GithubPatcher.Patch("VendanAndrews", "CombotPatcher", "master/bin/Release/CombotPatcher.exe", ".Net Programs");
             GithubPatcher.Patch("VendanAndrews", "CombotPatcher", "master/ComBot.iss", "Scripts");
             GithubPatcher.Patch("VendanAndrews", "LSMIPC", "master/Release/LSMIPC.dll", "LavishScript Modules");
             GithubPatcher.Patch("Tehtsuo", "Combot", Properties.Settings.Default.CombotBranch, @"Scripts\combot");
-            LavishScript.ExecuteCommand("run combot/combot.iss");
+
+            string arg = " \"" + string.Join("\" \"", extra.ToArray()) + "\"";
+            if(arg==" \"\"")
+                arg = "";
+
+            LavishScript.ExecuteCommand("run combot/combot.iss" + arg);
 
         }
     }

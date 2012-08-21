@@ -47,7 +47,7 @@ local.properties
 Properties/
 *.manifest
 *.vshost.exe
-*.dll
+#*.dll
 *InnerSpace.xml
 *.config
 *_i.c
