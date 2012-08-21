@@ -36,9 +36,9 @@ namespace CombotPatcher
 
             if (showhelp)
             {
-                MemoryStream desc = new MemoryStream();
-                p.WriteOptionDescriptions(new StreamWriter(desc));
-                InnerSpace.Echo(Encoding.ASCII.GetString(desc.ToArray()));
+                StringWriter desc = new StringWriter();
+                p.WriteOptionDescriptions(desc);
+                InnerSpace.Echo(desc.GetStringBuilder().ToString());
                 return;
             }
 
