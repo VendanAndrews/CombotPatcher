@@ -38,7 +38,8 @@ namespace CombotPatcher
             {
                 MemoryStream desc = new MemoryStream();
                 p.WriteOptionDescriptions(new StreamWriter(desc));
-                InnerSpace.Echo(desc.ToString());
+                InnerSpace.Echo(Encoding.ASCII.GetString(desc.ToArray()));
+                return;
             }
 
 
