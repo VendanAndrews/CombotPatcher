@@ -58,10 +58,43 @@ namespace CombotPatcher
 
             if (!skipupdate)
             {
-                GithubPatcher.Patch("VendanAndrews", "CombotPatcher", "master/bin/Release/CombotPatcher.exe", ".Net Programs");
-                GithubPatcher.Patch("VendanAndrews", "CombotPatcher", "master/ComBot.iss", "Scripts");
-                GithubPatcher.Patch("VendanAndrews", "LSMIPC", "master/Release/LSMIPC.dll", "LavishScript Modules");
-                GithubPatcher.Patch("Tehtsuo", "Combot", Properties.Settings.Default.CombotBranch, @"Scripts\combot");
+                try
+                {
+                    GithubPatcher.Patch("VendanAndrews", "CombotPatcher", "master/bin/Release/CombotPatcher.exe", ".Net Programs");
+                }
+                catch (WebException ex)
+                {
+                    InnerSpace.Echo("Error: " + ex.Message);
+                }
+                try
+                {
+                    GithubPatcher.Patch("VendanAndrews", "CombotPatcher", "master/ComBot.iss", "Scripts");
+                }
+                catch (WebException ex)
+                {
+                    InnerSpace.Echo("Error: " + ex.Message);
+                }
+                try
+                {
+                    GithubPatcher.Patch("VendanAndrews", "LSMIPC", "master/Release/LSMIPC.dll", "LavishScript Modules");
+                }
+                catch (WebException ex)
+                {
+                    InnerSpace.Echo("Error: " + ex.Message);
+                }
+                try
+                {
+                    GithubPatcher.Patch("Tehtsuo", "Combot", Properties.Settings.Default.CombotBranch, @"Scripts\combot");
+                }
+                catch (InvalidBranchException ex)
+                {
+                    InnerSpace.Echo("Invalid Branch");
+                    InnerSpace.Echo("Combot NOT UPDATED");
+                }
+                catch (WebException ex)
+                {
+                    InnerSpace.Echo("Error: " + ex.Message);
+                }
             }
             string arg = " \"" + string.Join("\" \"", extra.ToArray()) + "\"";
             if(arg==" \"\"")

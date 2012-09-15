@@ -54,7 +54,7 @@ namespace CombotPatcher
 
             GitHubClientFiles = new WebClient();
 
-            String GitHubData;
+            String GitHubData = "";
             JObject GitHubJSON;
             String GitHubURL;
             String GitHubSha;
@@ -62,8 +62,21 @@ namespace CombotPatcher
             InnerSpace.Echo(String.Format("Updating {0} {1} {2} in directory {3}", user, repo, tag, path));
 
             GitHubClient.Headers.Add("Accept: application/vnd.github.v3+json");
-            GitHubData = GitHubClient.DownloadString(String.Format("https://api.github.com/repos/{0}/{1}/git/refs/heads/{2}", user, repo, tag));
-
+            try
+            {
+                GitHubData = GitHubClient.DownloadString(String.Format("https://api.github.com/repos/{0}/{1}/git/refs/heads/{2}", user, repo, tag));
+            }
+            catch (WebException ex)
+            {
+                if (ex.Status == WebExceptionStatus.ProtocolError)
+                {
+                    if (((HttpWebResponse)ex.Response).StatusCode == HttpStatusCode.NotFound)
+                    {
+                        throw new InvalidBranchException();
+                    }
+                }
+                throw ex;
+            }
             GitHubJSON = JObject.Parse(GitHubData);
 
             GitHubURL = (String)GitHubJSON["object"]["url"];
@@ -186,5 +199,12 @@ namespace CombotPatcher
         public Dictionary<String, String> FileShas = new Dictionary<string, string>();
         public Dictionary<String, ShaTree> SubTrees = new Dictionary<string, ShaTree>();
         public String TreeSha;
+    }
+
+    class InvalidBranchException : ApplicationException
+    {
+        public InvalidBranchException() : base("Invalid Branch")
+        {
+        }
     }
 }
