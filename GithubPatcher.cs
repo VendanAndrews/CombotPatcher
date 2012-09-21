@@ -31,9 +31,9 @@ namespace CombotPatcher
                 path = InnerSpace.Path + "\\" + path;
             }
 
-            if (File.Exists(path + "\\ShaTree.JSON"))
+            if (File.Exists(path + "\\" + user + "-" + repo + "-ShaTree.JSON"))
             {
-                GitHubShaTree = JsonConvert.DeserializeObject<ShaTree>(File.ReadAllText(path + "\\ShaTree.JSON"));
+                GitHubShaTree = JsonConvert.DeserializeObject<ShaTree>(File.ReadAllText(path + "\\" + user + "-" + repo + "-ShaTree.JSON"));
             }
             else
             {
@@ -124,7 +124,7 @@ namespace CombotPatcher
                 RecursiveTree(path, GitHubURL, GitHubShaTree);
             }
 
-            File.WriteAllText(path + "\\ShaTree.JSON", JsonConvert.SerializeObject(GitHubShaTree));
+            File.WriteAllText(path + "\\" + user + "-" + repo + "-ShaTree.JSON", JsonConvert.SerializeObject(GitHubShaTree));
             InnerSpace.Echo(String.Format("{0} {1} {2} Updated in directory {3}", user, repo, tag, path));
         }
 
