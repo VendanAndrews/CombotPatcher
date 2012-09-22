@@ -25,6 +25,7 @@ namespace CombotPatcher
             bool showhelp = false;
             bool updateonly = false;
             bool skipupdate = false;
+            bool delete = false;
 
             OptionSet p = new OptionSet() {
                 { "b|branch=", "Change the active Combot branch",
@@ -38,8 +39,11 @@ namespace CombotPatcher
                 { "s|skip-update", "Skip update",
                     v => { skipupdate = v != null;}
                 },
-                { "h|help",  "Show this message and exit", 
+                { "h|help", "Show this message and exit", 
                     v => { showhelp = v != null; } 
+                },
+                { "d|delete", "Delete all but config files, and download fresh version",
+                    v => { delete = v != null; }
                 }
             };
 
@@ -82,6 +86,22 @@ namespace CombotPatcher
                 {
                     InnerSpace.Echo("Error: " + ex.Message);
                 }
+
+                if (delete)
+                {
+                    foreach(string dir in Directory.GetDirectories(InnerSpace.Path + @"\Scripts\combot\", "*", SearchOption.TopDirectoryOnly))
+                    {
+                        if(dir.Substring(dir.Length - 6).ToLower() != "config")
+                        {
+                            Directory.Delete(dir, true);
+                        }
+                    }
+                    foreach (string file in Directory.GetFiles(InnerSpace.Path + @"\Scripts\combot\", "*", SearchOption.TopDirectoryOnly))
+                    {
+                        File.Delete(file);
+                    }
+                }
+
                 try
                 {
                     GithubPatcher.Patch("Tehtsuo", "Combot", Properties.Settings.Default.CombotBranch, @"Scripts\combot");
