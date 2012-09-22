@@ -42,7 +42,7 @@ namespace CombotPatcher
                     v => { showhelp = v != null; } 
                 }
             };
-            
+
             List<string> extra = p.Parse(args);
 
             if (showhelp)
@@ -95,13 +95,66 @@ namespace CombotPatcher
                 {
                     InnerSpace.Echo("Error: " + ex.Message);
                 }
+
+                BuildIncludeFile(@"Scripts\combot\behavior\", @"..\behavior\", @"Scripts\combot\temp\behaviorincludes.iss");
+                BuildIncludeFile(@"Scripts\combot\minimode\", @"..\minimode\", @"Scripts\combot\temp\minimodeincludes.iss");
+                BuildDeclareFile(@"Scripts\combot\behavior\", @"Scripts\combot\temp\behaviordeclares.iss");
+                BuildDeclareFile(@"Scripts\combot\minimode\", @"Scripts\combot\temp\minimodedeclares.iss");
+
             }
             string arg = " \"" + string.Join("\" \"", extra.ToArray()) + "\"";
-            if(arg==" \"\"")
+            if (arg == " \"\"")
                 arg = "";
+
+
+
             if (!updateonly)
             {
                 LavishScript.ExecuteCommand("run combot/combot.iss" + arg);
+            }
+
+        }
+
+        public static void BuildIncludeFile(string path, string relative, string file)
+        {
+            if (!Path.IsPathRooted(path))
+            {
+                path = InnerSpace.Path + "\\" + path;
+            }
+            if (!Path.IsPathRooted(file))
+            {
+                file = InnerSpace.Path + "\\" + file;
+            }
+            StreamWriter includefile;
+            using (includefile = new StreamWriter(File.Open(file, FileMode.Create)))
+            {
+                foreach (string filename in Directory.GetFiles(path, "*.iss", SearchOption.AllDirectories))
+                {
+                    string relfilename = filename.Replace(path, "");
+                    includefile.WriteLine("#include \"{0}{1}\"", relative, relfilename);
+                }
+            }
+        }
+
+        public static void BuildDeclareFile(string path, string file)
+        {
+            if (!Path.IsPathRooted(path))
+            {
+                path = InnerSpace.Path + "\\" + path;
+            }
+            if (!Path.IsPathRooted(file))
+            {
+                file = InnerSpace.Path + "\\" + file;
+            }
+            StreamWriter includefile;
+            using (includefile = new StreamWriter(File.Open(file, FileMode.Create)))
+            {
+                foreach (string filename in Directory.GetFiles(path, "*.iss", SearchOption.AllDirectories))
+                {
+                    string objectName = Path.GetFileNameWithoutExtension(filename);
+
+                    includefile.WriteLine("declarevariable {0} obj_{0} script", objectName);
+                }
             }
 
         }
