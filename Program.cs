@@ -146,12 +146,15 @@ namespace CombotPatcher
                 file = InnerSpace.Path + "\\" + file;
             }
             StreamWriter includefile;
-            using (includefile = new StreamWriter(File.Open(file, FileMode.Create)))
+            if (Directory.Exists(Path.GetDirectoryName(file)))
             {
-                foreach (string filename in Directory.GetFiles(path, "*.iss", SearchOption.AllDirectories))
+                using (includefile = new StreamWriter(File.Open(file, FileMode.Create)))
                 {
-                    string relfilename = filename.Replace(path, "");
-                    includefile.WriteLine("#include \"{0}{1}\"", relative, relfilename);
+                    foreach (string filename in Directory.GetFiles(path, "*.iss", SearchOption.AllDirectories))
+                    {
+                        string relfilename = filename.Replace(path, "");
+                        includefile.WriteLine("#include \"{0}{1}\"", relative, relfilename);
+                    }
                 }
             }
         }
@@ -167,16 +170,18 @@ namespace CombotPatcher
                 file = InnerSpace.Path + "\\" + file;
             }
             StreamWriter includefile;
-            using (includefile = new StreamWriter(File.Open(file, FileMode.Create)))
+            if (Directory.Exists(Path.GetDirectoryName(file)))
             {
-                foreach (string filename in Directory.GetFiles(path, "*.iss", SearchOption.AllDirectories))
+                using (includefile = new StreamWriter(File.Open(file, FileMode.Create)))
                 {
-                    string objectName = Path.GetFileNameWithoutExtension(filename);
+                    foreach (string filename in Directory.GetFiles(path, "*.iss", SearchOption.AllDirectories))
+                    {
+                        string objectName = Path.GetFileNameWithoutExtension(filename);
 
-                    includefile.WriteLine("declarevariable {0} obj_{0} script", objectName);
+                        includefile.WriteLine("declarevariable {0} obj_{0} script", objectName);
+                    }
                 }
             }
-
         }
     }
 }
