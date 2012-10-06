@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="CombotBranch" Type="System.String" Scope="User">
-      <Value Profile="(Default)">experimental</Value>
+      <Value Profile="(Default)">public</Value>
     </Setting>
     <Setting Name="BehaviorRepos" Type="System.Collections.Specialized.StringCollection" Scope="User">
       <Value Profile="(Default)" />

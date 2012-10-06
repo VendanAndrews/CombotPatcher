@@ -25,7 +25,7 @@ namespace CombotPatcher.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("experimental")]
+        [global::System.Configuration.DefaultSettingValueAttribute("public")]
         public string CombotBranch {
             get {
                 return ((string)(this["CombotBranch"]));
