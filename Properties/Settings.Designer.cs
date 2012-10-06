@@ -34,5 +34,27 @@ namespace CombotPatcher.Properties {
                 this["CombotBranch"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Collections.Specialized.StringCollection BehaviorRepos {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["BehaviorRepos"]));
+            }
+            set {
+                this["BehaviorRepos"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Collections.Specialized.StringCollection MiniModeRepos {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["MiniModeRepos"]));
+            }
+            set {
+                this["MiniModeRepos"] = value;
+            }
+        }
     }
 }

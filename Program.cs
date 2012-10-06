@@ -26,6 +26,8 @@ namespace CombotPatcher
             bool updateonly = false;
             bool skipupdate = false;
             bool delete = false;
+            bool fulldelete = false;
+            bool listrepos = false;
 
             OptionSet p = new OptionSet() {
                 { "b|branch=", "Change the active Combot branch",
@@ -42,8 +44,80 @@ namespace CombotPatcher
                 { "h|help", "Show this message and exit", 
                     v => { showhelp = v != null; } 
                 },
-                { "d|delete", "Delete all but config files, and download fresh version",
+                { "d|delete", "Delete all but config files and 3rd party files, and download fresh version",
                     v => { delete = v != null; }
+                },
+                { "full-delete", "Delete all but config files, and download fresh version",
+                    v => { fulldelete = v != null; }
+                },
+                { "list-repos", "List all active 3rd party repos and exit",
+                    v => { listrepos = v != null; }
+                },
+                { "add-behavior=", "Add 3rd Party Behavior and exit",
+                    v => {
+                        if (Properties.Settings.Default.BehaviorRepos == null)
+                        {
+                            Properties.Settings.Default.BehaviorRepos = new System.Collections.Specialized.StringCollection();
+                        }
+                        Properties.Settings.Default.BehaviorRepos.Add(string.Join("|", v.Split(' ')));
+                        Properties.Settings.Default.Save();
+                        listrepos = true;
+                    }
+                },
+                { "add-minimode=", "Add 3rd Party MiniMode and exit",
+                    v => {
+                        if (Properties.Settings.Default.MiniModeRepos == null)
+                        {
+                            Properties.Settings.Default.MiniModeRepos = new System.Collections.Specialized.StringCollection();
+                        }
+                        Properties.Settings.Default.MiniModeRepos.Add(string.Join("|", v.Split(' ')));
+                        Properties.Settings.Default.Save();
+                        listrepos = true;
+                    }
+                },
+                { "rem-behavior=", "Remove 3rd Party Behavior and exit",
+                    v => {
+                        if (Properties.Settings.Default.BehaviorRepos != null)
+                        {
+                            foreach(string repo in Properties.Settings.Default.BehaviorRepos)
+                            {
+                                string[] parts = repo.Split('|');
+                                if(parts[0].ToLower() == v.ToLower())
+                                {
+                                    Properties.Settings.Default.BehaviorRepos.Remove(repo);
+                                    if(Directory.Exists(InnerSpace.Path + @"\Scripts\combot\thirdparty\behaviors\" + parts[0]))
+                                    {
+                                        Directory.Delete(InnerSpace.Path + @"\Scripts\combot\thirdparty\behaviors\" + parts[0], true);
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                        Properties.Settings.Default.Save();
+                        listrepos = true;
+                    }
+                },
+                { "rem-minimode=", "Remove 3rd Party MiniMode and exit",
+                    v => {
+                        if (Properties.Settings.Default.MiniModeRepos != null)
+                        {
+                            foreach(string repo in Properties.Settings.Default.MiniModeRepos)
+                            {
+                                string[] parts = repo.Split('|');
+                                if(parts[0].ToLower() == v.ToLower())
+                                {
+                                    Properties.Settings.Default.MiniModeRepos.Remove(repo);
+                                    if(Directory.Exists(InnerSpace.Path + @"\Scripts\combot\thirdparty\minimodes\" + parts[0]))
+                                    {
+                                        Directory.Delete(InnerSpace.Path + @"\Scripts\combot\thirdparty\minimodes\" + parts[0], true);
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                        Properties.Settings.Default.Save();
+                        listrepos = true;
+                    }
                 }
             };
 
@@ -56,6 +130,29 @@ namespace CombotPatcher
                 InnerSpace.Echo("Usage: run combot [-b <branch>] [-u|-s] [<char name>]");
                 InnerSpace.Echo("       run combot -h");
                 InnerSpace.Echo(desc.GetStringBuilder().ToString());
+                return;
+            }
+
+            if (listrepos)
+            {
+                InnerSpace.Echo("3rd Party Behaviors:");
+                if (Properties.Settings.Default.BehaviorRepos != null)
+                {
+                    foreach (string repo in Properties.Settings.Default.BehaviorRepos)
+                    {
+                        string[] parts = repo.Split('|');
+                        InnerSpace.Echo(string.Format("Name: {0}        Repo: {1} {2} {3}", parts[0], parts[1], parts[2], parts[3]));
+                    }
+                }
+                InnerSpace.Echo("3rd Party MiniModes:");
+                if (Properties.Settings.Default.MiniModeRepos != null)
+                {
+                    foreach (string repo in Properties.Settings.Default.MiniModeRepos)
+                    {
+                        string[] parts = repo.Split('|');
+                        InnerSpace.Echo(string.Format("Name: {0}        Repo: {1} {2} {3}", parts[0], parts[1], parts[2], parts[3]));
+                    }
+                }
                 return;
             }
 
@@ -87,11 +184,15 @@ namespace CombotPatcher
                     InnerSpace.Echo("Error: " + ex.Message);
                 }
 
-                if (delete)
+                if (delete || fulldelete)
                 {
                     foreach(string dir in Directory.GetDirectories(InnerSpace.Path + @"\Scripts\combot\", "*", SearchOption.TopDirectoryOnly))
                     {
-                        if(dir.Substring(dir.Length - 6).ToLower() != "config")
+                        if(dir.Substring(dir.Length - 6).ToLower() != "config" && dir.Substring(dir.Length - 10).ToLower() != "thirdparty")
+                        {
+                            Directory.Delete(dir, true);
+                        }
+                        if (dir.Substring(dir.Length - 10).ToLower() == "thirdparty" && fulldelete)
                         {
                             Directory.Delete(dir, true);
                         }
@@ -116,11 +217,50 @@ namespace CombotPatcher
                     InnerSpace.Echo("Error: " + ex.Message);
                 }
 
+                Directory.CreateDirectory(InnerSpace.Path + @"\Scripts\combot\thirdparty\behaviors\");
+                Directory.CreateDirectory(InnerSpace.Path + @"\Scripts\combot\thirdparty\minimodes\");
+
+                if (Properties.Settings.Default.BehaviorRepos != null)
+                {
+                    foreach (string repo in Properties.Settings.Default.BehaviorRepos)
+                    {
+                        string[] parts = repo.Split('|');
+                        try
+                        {
+                            GithubPatcher.Patch(parts[1], parts[2], parts[3], @"Scripts\combot\thirdparty\behaviors\" + parts[0]);
+                        }
+                        catch (WebException ex)
+                        {
+                            InnerSpace.Echo("Error: " + ex.Message);
+                        }
+                    }
+                }
+
+                if (Properties.Settings.Default.MiniModeRepos != null)
+                {
+                    foreach (string repo in Properties.Settings.Default.MiniModeRepos)
+                    {
+                        string[] parts = repo.Split('|');
+                        try
+                        {
+                            GithubPatcher.Patch(parts[1], parts[2], parts[3], @"Scripts\combot\thirdparty\minimodes\" + parts[0]);
+                        }
+                        catch (WebException ex)
+                        {
+                            InnerSpace.Echo("Error: " + ex.Message);
+                        }
+                    }
+                }
+
                 BuildIncludeFile(@"Scripts\combot\behavior\", @"..\behavior\", @"Scripts\combot\temp\behaviorincludes.iss");
                 BuildIncludeFile(@"Scripts\combot\minimode\", @"..\minimode\", @"Scripts\combot\temp\minimodeincludes.iss");
                 BuildDeclareFile(@"Scripts\combot\behavior\", @"Scripts\combot\temp\behaviordeclares.iss");
                 BuildDeclareFile(@"Scripts\combot\minimode\", @"Scripts\combot\temp\minimodedeclares.iss");
-
+                BuildIncludeFile(@"Scripts\combot\thirdparty\behaviors\", @"..\thirdparty\behaviors\", @"Scripts\combot\temp\thirdpartybehaviorincludes.iss");
+                BuildIncludeFile(@"Scripts\combot\thirdparty\minimodes\", @"..\thirdparty\minimodes\", @"Scripts\combot\temp\thirdpartyminimodeincludes.iss");
+                BuildDeclareFile(@"Scripts\combot\thirdparty\behaviors\", @"Scripts\combot\temp\thirdpartybehaviordeclares.iss");
+                BuildDeclareFile(@"Scripts\combot\thirdparty\minimodes\", @"Scripts\combot\temp\thirdpartyminimodedeclares.iss");
+                
             }
             string arg = " \"" + string.Join("\" \"", extra.ToArray()) + "\"";
             if (arg == " \"\"")
