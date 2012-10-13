@@ -313,7 +313,8 @@ function main(bool Init=TRUE)
 	
 	ISMenu.FindChild[""ComBot Tools""]:AddCommand[""Clean ComBot Install"", ""run combot -du""]
 	ISMenu.FindChild[""ComBot Tools""]:AddSubMenu[""Switch Branch""]
-    {0}
+";
+                string menuFinal = @"
 }
 ";
                 string menuItem = @"    ISMenu.FindChild[""ComBot Tools""].FindChild[""Switch Branch""]:AddCommand[""{0}"", ""run combot -ub {1}"", {2}]
@@ -335,7 +336,9 @@ function main(bool Init=TRUE)
                 StreamWriter menuFile;
                 using (menuFile = new StreamWriter(File.Open(menuFilePath, FileMode.Create)))
                 {
-                    menuFile.Write(String.Format(menuContents, menuItems));
+                    menuFile.Write(menuContents);
+                    menuFile.Write(menuItems);
+                    menuFile.Write(menuFinal);
                 }
                 Frame.Lock();
                 if (LavishScript.Objects.GetObject("Session") != null)
