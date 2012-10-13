@@ -260,7 +260,64 @@ namespace CombotPatcher
                 BuildIncludeFile(@"Scripts\combot\thirdparty\minimodes\", @"..\thirdparty\minimodes\", @"Scripts\combot\temp\thirdpartyminimodeincludes.iss");
                 BuildDeclareFile(@"Scripts\combot\thirdparty\behaviors\", @"Scripts\combot\temp\thirdpartybehaviordeclares.iss");
                 BuildDeclareFile(@"Scripts\combot\thirdparty\minimodes\", @"Scripts\combot\temp\thirdpartyminimodedeclares.iss");
-                
+
+                string menuFilePath = InnerSpace.Path + "\\scripts\\init-uplink\\combot-menu.iss";
+                string menuContents = @"/*
+
+ComBot  Copyright © 2012  Tehtsuo and Vendan
+
+This file is part of ComBot.
+
+ComBot is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+ComBot is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with ComBot.  If not, see <http://www.gnu.org/licenses/>.
+
+*/
+
+function main()
+{
+	if ${ISMenu.Children(exists)}
+	{
+		ISMenu:AddSeperator[""ISBoxer-Combot""]
+	}
+	if ${ISMenu.FindChild[""Update ComBot""](exists)}
+	{
+		ISMenu.FindChild[""Update ComBot""]:SetCommand[""run combot -u""]
+	}
+	else
+	{
+		ISMenu:AddCommand[""Update ComBot"", ""run combot -u""]
+	}
+	if ${ISMenu.FindChild[""ComBot Tools""](exists)}
+	{
+		ISMenu.FindChild[""ComBot Tools""]:Clear
+	}
+	else
+	{
+		ISMenu:AddSubMenu[""ComBot Tools""]
+	}
+	
+	ISMenu.FindChild[""ComBot Tools""]:AddCommand[""Clean ComBot Install"", ""run combot -du""]
+	ISMenu.FindChild[""ComBot Tools""]:AddSubMenu[""Switch Branch""]
+	ISMenu.FindChild[""ComBot Tools""].FindChild[""Switch Branch""]:AddCommand[""Public"", ""run combot -ub public""]
+	ISMenu.FindChild[""ComBot Tools""].FindChild[""Switch Branch""]:AddCommand[""Experimental"", ""run combot -ub experimental""]
+}
+";
+                StreamWriter menuFile;
+                using (menuFile = new StreamWriter(File.Open(menuFilePath, FileMode.Create)))
+                {
+                    menuFile.Write(menuContents);
+                }
+                LavishScript.ExecuteCommand("run init-uplink/combot-menu.iss");
             }
             string arg = " \"" + string.Join("\" \"", extra.ToArray()) + "\"";
             if (arg == " \"\"")
