@@ -287,7 +287,7 @@ function main()
 {
 	if ${ISMenu.Children(exists)}
 	{
-		ISMenu:AddSeperator[""ISBoxer-Combot""]
+		ISMenu:AddSeparator[""ISBoxer-Combot""]
 	}
 	if ${ISMenu.FindChild[""Update ComBot""](exists)}
 	{
