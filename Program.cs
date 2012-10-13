@@ -313,14 +313,29 @@ function main(bool Init=TRUE)
 	
 	ISMenu.FindChild[""ComBot Tools""]:AddCommand[""Clean ComBot Install"", ""run combot -du""]
 	ISMenu.FindChild[""ComBot Tools""]:AddSubMenu[""Switch Branch""]
-	ISMenu.FindChild[""ComBot Tools""].FindChild[""Switch Branch""]:AddCommand[""Public"", ""run combot -ub public""]
-	ISMenu.FindChild[""ComBot Tools""].FindChild[""Switch Branch""]:AddCommand[""Experimental"", ""run combot -ub experimental""]
+    {0}
 }
 ";
+                string menuItem = @"    ISMenu.FindChild[""ComBot Tools""].FindChild[""Switch Branch""]:AddCommand[""{0}"", ""run combot -ub {1}"", {2}]
+";
+                string[] branches = { "public", "experimental" };
+                string[] branchNames = { "Public", "Experimental" };
+                string menuItems = "";
+
+                for (int l1 = 0; l1 < branches.Length; l1++)
+                {
+                    menuItems += String.Format(menuItem, branchNames[l1], branches[l1], ((branches[l1] == Properties.Settings.Default.CombotBranch) ? "TRUE" : "FALSE"));
+                }
+
+                if (!branches.Contains(Properties.Settings.Default.CombotBranch))
+                {
+                    menuItems += String.Format(menuItem, Properties.Settings.Default.CombotBranch, Properties.Settings.Default.CombotBranch, "TRUE");
+                }
+
                 StreamWriter menuFile;
                 using (menuFile = new StreamWriter(File.Open(menuFilePath, FileMode.Create)))
                 {
-                    menuFile.Write(menuContents);
+                    menuFile.Write(String.Format(menuContents, menuItems));
                 }
                 Frame.Lock();
                 if (LavishScript.Objects.GetObject("Session") != null)
