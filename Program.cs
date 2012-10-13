@@ -317,7 +317,16 @@ function main()
                 {
                     menuFile.Write(menuContents);
                 }
-                LavishScript.ExecuteCommand("run init-uplink/combot-menu.iss");
+                Frame.Lock();
+                if (LavishScript.Objects.GetObject("Session") != null)
+                {
+                    LavishScript.ExecuteCommand("uplink run init-uplink/combot-menu.iss");
+                }
+                else
+                {
+                    LavishScript.ExecuteCommand("run init-uplink/combot-menu.iss");
+                }
+                Frame.Unlock();
             }
             string arg = " \"" + string.Join("\" \"", extra.ToArray()) + "\"";
             if (arg == " \"\"")
