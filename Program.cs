@@ -283,8 +283,13 @@ along with ComBot.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-function main()
+function main(bool Init=TRUE)
 {
+	if ${Init}
+	{
+		TimedCommand 20 run init-uplink/combot-menu.iss FALSE
+		return
+	}
 	if ${ISMenu.Children(exists)}
 	{
 		ISMenu:AddSeparator[""ISBoxer-Combot""]
@@ -320,11 +325,11 @@ function main()
                 Frame.Lock();
                 if (LavishScript.Objects.GetObject("Session") != null)
                 {
-                    LavishScript.ExecuteCommand("uplink run init-uplink/combot-menu.iss");
+                    LavishScript.ExecuteCommand("uplink run init-uplink/combot-menu.iss FALSE");
                 }
                 else
                 {
-                    LavishScript.ExecuteCommand("run init-uplink/combot-menu.iss");
+                    LavishScript.ExecuteCommand("run init-uplink/combot-menu.iss FALSE");
                 }
                 Frame.Unlock();
             }
