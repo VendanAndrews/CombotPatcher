@@ -21,7 +21,7 @@ namespace CombotPatcher
         static ShaTree GitHubShaTree;
         static Boolean Updated;
 
-        public static void Patch(string user, string repo, string tag, string path)
+        public static void Patch(string repo, string tag, string path)
         {
             Queue<String> repoPaths;
             Updated = false;
@@ -31,9 +31,9 @@ namespace CombotPatcher
                 path = InnerSpace.Path + "\\" + path;
             }
 
-            if (File.Exists(path + "\\" + user + "-" + repo + "-ShaTree.JSON"))
+            if (File.Exists(path + "\\" + repo + "-ShaTree.JSON"))
             {
-                GitHubShaTree = JsonConvert.DeserializeObject<ShaTree>(File.ReadAllText(path + "\\" + user + "-" + repo + "-ShaTree.JSON"));
+                GitHubShaTree = JsonConvert.DeserializeObject<ShaTree>(File.ReadAllText(path + "\\" + repo + "-ShaTree.JSON"));
             }
             else
             {
@@ -59,12 +59,12 @@ namespace CombotPatcher
             String GitHubURL;
             String GitHubSha;
 
-            InnerSpace.Echo(String.Format("Updating {0} {1} {2} in directory {3}", user, repo, tag, path));
+            InnerSpace.Echo(String.Format("Updating {0} {1} in directory {2}", repo, tag, path));
 
             GitHubClient.Headers.Add("Accept: application/vnd.github.v3+json");
             try
             {
-                GitHubData = GitHubClient.DownloadString(String.Format("https://api.github.com/repos/{0}/{1}/git/refs/heads/{2}", user, repo, tag));
+                GitHubData = GitHubClient.DownloadString(String.Format("http://combot.vendaria.net/gitapi/GetTree.php?repo={0}&branch={1}", repo, tag));
             }
             catch (WebException ex)
             {
@@ -77,37 +77,29 @@ namespace CombotPatcher
                 }
                 throw ex;
             }
-            GitHubJSON = JObject.Parse(GitHubData);
-
-            GitHubURL = (String)GitHubJSON["object"]["url"];
-
-            GitHubClient.Headers.Add("Accept: application/vnd.github.v3+json");
-            GitHubData = GitHubClient.DownloadString(GitHubURL);
 
             GitHubJSON = JObject.Parse(GitHubData);
 
-            GitHubURL = (String)GitHubJSON["tree"]["url"];
-            GitHubSha = (String)GitHubJSON["tree"]["sha"];
+            JToken Tree = GitHubJSON["tree"];
+
+            GitHubSha = (string)GitHubJSON["sha"];
 
             foreach (String repoPath in repoPaths)
             {
-                GitHubClient.Headers.Add("Accept: application/vnd.github.v3+json");
-                GitHubData = GitHubClient.DownloadString(GitHubURL);
-                GitHubJSON = JObject.Parse(GitHubData);
-                foreach (JToken file in GitHubJSON["tree"])
+                foreach (JProperty fileProp in Tree.Values<JProperty>())
                 {
+                    JToken file = fileProp.Value;
                     if ((String)file["path"] == repoPath)
                     {
                         if ((String)file["type"] == "tree")
                         {
-                            GitHubURL = (String)file["url"];
-                            GitHubSha = (String)file["sha"];
+                            Tree = file["tree"];
                         }
                         else
                         {
                             if (GitHubShaTree.TreeSha != (String)file["sha"])
                             {
-                                UpdateFile(path + "\\" + (String)file["path"], (String)file["url"]);
+                                UpdateFile(path + "\\" + (String)file["path"], repo, (String)file["sha"]);
                                 InnerSpace.Echo((String)file["path"] + " Downloaded");
                                 GitHubShaTree.TreeSha = (String)file["sha"];
                             }
@@ -121,36 +113,27 @@ namespace CombotPatcher
             if (GitHubShaTree.TreeSha != GitHubSha)
             {
                 GitHubShaTree.TreeSha = GitHubSha;
-                RecursiveTree(path, GitHubURL, GitHubShaTree);
+                RecursiveTree(path, Tree, GitHubShaTree, repo);
             }
 
-            File.WriteAllText(path + "\\" + user + "-" + repo + "-ShaTree.JSON", JsonConvert.SerializeObject(GitHubShaTree));
-            InnerSpace.Echo(String.Format("{0} {1} {2} Updated in directory {3}", user, repo, tag, path));
+            File.WriteAllText(path + "\\" + repo + "-ShaTree.JSON", JsonConvert.SerializeObject(GitHubShaTree));
+            InnerSpace.Echo(String.Format("{0} {1} Updated in directory {2}", repo, tag, path));
         }
 
-        static void RecursiveTree(String path, String url, ShaTree ThisShaTree)
+        static void RecursiveTree(String path, JToken Tree, ShaTree ThisShaTree, String repo)
         {
-            String TreeData;
-            JObject TreeJSON;
 
             Directory.CreateDirectory(path);
-
-            GitHubClient.Headers.Add("Accept: application/vnd.github.v3+json");
-            TreeData = GitHubClient.DownloadString(url);
-            TreeJSON = JObject.Parse(TreeData);
-            foreach (JToken file in TreeJSON["tree"])
+            foreach (JProperty fileProp in Tree.Values<JProperty>())
             {
+                JToken file = fileProp.Value;
                 if ((String)file["type"] == "tree")
                 {
                     if (!ThisShaTree.SubTrees.ContainsKey((String)file["path"]))
                     {
                         ThisShaTree.SubTrees.Add((String)file["path"], new ShaTree());
                     }
-                    if (ThisShaTree.SubTrees[(String)file["path"]].TreeSha != (String)file["sha"])
-                    {
-                        ThisShaTree.SubTrees[(String)file["path"]].TreeSha = (String)file["sha"];
-                        RecursiveTree(path + "\\" + (String)file["path"], (String)file["url"], ThisShaTree.SubTrees[(String)file["path"]]);
-                    }
+                    RecursiveTree(path + "\\" + (String)file["path"], file["tree"], ThisShaTree.SubTrees[(String)file["path"]], repo);
                 }
                 else
                 {
@@ -163,7 +146,7 @@ namespace CombotPatcher
                         if (ThisShaTree.FileShas[(String)file["path"]] != (String)file["sha"])
                         {
                             ThisShaTree.FileShas[(String)file["path"]] = (String)file["sha"];
-                            UpdateFile(path + "\\" + (String)file["path"], (String)file["url"]);
+                            UpdateFile(path + "\\" + (String)file["path"], repo, (String)file["sha"]);
                             InnerSpace.Echo((String)file["path"] + " Downloaded");
                         }
                     }
@@ -171,7 +154,7 @@ namespace CombotPatcher
             }
         }
 
-        static void UpdateFile(String name, String url)
+        static void UpdateFile(String name, String repo, String sha)
         {
             if (File.Exists(name))
             {
@@ -188,8 +171,7 @@ namespace CombotPatcher
                     File.Move(name, name + ".old");
                 }
             }
-            GitHubClientFiles.Headers.Add("Accept: application/vnd.github.v3.raw");
-            GitHubClientFiles.DownloadFile(url, name);
+            GitHubClientFiles.DownloadFile(String.Format("http://combot.vendaria.net/gitapi/GetBlob.php?repo={0}&sha={1}", repo, sha), name);
             Updated = true;
         }
     }

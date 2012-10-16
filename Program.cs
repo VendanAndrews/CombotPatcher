@@ -141,7 +141,7 @@ namespace CombotPatcher
                     foreach (string repo in Properties.Settings.Default.BehaviorRepos)
                     {
                         string[] parts = repo.Split('|');
-                        InnerSpace.Echo(string.Format("Name: {0}        Repo: {1} {2} {3}", parts[0], parts[1], parts[2], parts[3]));
+                        InnerSpace.Echo(string.Format("Name: {0}        Repo: {1} {2}", parts[0], parts[1], parts[2]));
                     }
                 }
                 InnerSpace.Echo("3rd Party MiniModes:");
@@ -150,7 +150,7 @@ namespace CombotPatcher
                     foreach (string repo in Properties.Settings.Default.MiniModeRepos)
                     {
                         string[] parts = repo.Split('|');
-                        InnerSpace.Echo(string.Format("Name: {0}        Repo: {1} {2} {3}", parts[0], parts[1], parts[2], parts[3]));
+                        InnerSpace.Echo(string.Format("Name: {0}        Repo: {1} {2}", parts[0], parts[1], parts[2]));
                     }
                 }
                 return;
@@ -161,7 +161,7 @@ namespace CombotPatcher
             {
                 try
                 {
-                    GithubPatcher.Patch("VendanAndrews", "CombotPatcher", "master/bin/Release/CombotPatcher.exe", ".Net Programs");
+                    GithubPatcher.Patch("CombotPatcher", "master/bin/Release/CombotPatcher.exe", ".Net Programs");
                 }
                 catch (WebException ex)
                 {
@@ -169,7 +169,7 @@ namespace CombotPatcher
                 }
                 try
                 {
-                    GithubPatcher.Patch("VendanAndrews", "CombotPatcher", "master/ComBot.iss", "Scripts");
+                    GithubPatcher.Patch("CombotPatcher", "master/ComBot.iss", "Scripts");
                 }
                 catch (WebException ex)
                 {
@@ -177,7 +177,7 @@ namespace CombotPatcher
                 }
                 try
                 {
-                    GithubPatcher.Patch("VendanAndrews", "LSMIPC", "master/Release/LSMIPC.dll", "LavishScript Modules");
+                    GithubPatcher.Patch("LSMIPC", "master/Release/LSMIPC.dll", "LavishScript Modules");
                 }
                 catch (WebException ex)
                 {
@@ -205,7 +205,7 @@ namespace CombotPatcher
 
                 try
                 {
-                    GithubPatcher.Patch("Tehtsuo", "Combot", Properties.Settings.Default.CombotBranch, @"Scripts\combot");
+                    GithubPatcher.Patch("Combot", Properties.Settings.Default.CombotBranch, @"Scripts\combot");
                 }
                 catch (InvalidBranchException ex)
                 {
@@ -227,11 +227,11 @@ namespace CombotPatcher
                         string[] parts = repo.Split('|');
                         try
                         {
-                            GithubPatcher.Patch(parts[1], parts[2], parts[3], @"Scripts\combot\thirdparty\behaviors\" + parts[0]);
+                            GithubPatcher.Patch(parts[1], parts[2], @"Scripts\combot\thirdparty\behaviors\" + parts[0]);
                         }
                         catch (WebException ex)
                         {
-                            InnerSpace.Echo("Error: " + ex.Message);
+                            InnerSpace.Echo("Error " + ex.Message);
                         }
                     }
                 }
@@ -243,7 +243,7 @@ namespace CombotPatcher
                         string[] parts = repo.Split('|');
                         try
                         {
-                            GithubPatcher.Patch(parts[1], parts[2], parts[3], @"Scripts\combot\thirdparty\minimodes\" + parts[0]);
+                            GithubPatcher.Patch(parts[1], parts[2], @"Scripts\combot\thirdparty\minimodes\" + parts[0]);
                         }
                         catch (WebException ex)
                         {
