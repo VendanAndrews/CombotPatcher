@@ -359,6 +359,7 @@ function main(bool Init=TRUE)
 
             if (!updateonly)
             {
+                InnerSpace.Echo(String.Format("Running Combot Branch {0}", Properties.Settings.Default.CombotBranch));
                 LavishScript.ExecuteCommand("run combot/combot.iss" + arg);
             }
 
