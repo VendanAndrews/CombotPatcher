@@ -139,11 +139,11 @@ namespace CombotPatcher
 
             if (deleterepos)
             {
-                if (Properties.Settings.Default.BehaviorRepos == null)
+                if (Properties.Settings.Default.BehaviorRepos != null)
                 {
                     Properties.Settings.Default.BehaviorRepos.Clear();
                 }
-                if (Properties.Settings.Default.MiniModeRepos == null)
+                if (Properties.Settings.Default.MiniModeRepos != null)
                 {
                     Properties.Settings.Default.MiniModeRepos.Clear();
                 }
