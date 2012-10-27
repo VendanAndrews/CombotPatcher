@@ -28,6 +28,7 @@ namespace CombotPatcher
             bool delete = false;
             bool fulldelete = false;
             bool listrepos = false;
+            bool deleterepos = false;
 
             OptionSet p = new OptionSet() {
                 { "b|branch=", "Change the active Combot branch",
@@ -118,6 +119,9 @@ namespace CombotPatcher
                         Properties.Settings.Default.Save();
                         listrepos = true;
                     }
+                },
+                {"rem-repos", "Delete all 3rd party repos",
+                    v => { deleterepos = v != null; }
                 }
             };
 
@@ -131,6 +135,14 @@ namespace CombotPatcher
                 InnerSpace.Echo("       run combot -h");
                 InnerSpace.Echo(desc.GetStringBuilder().ToString());
                 return;
+            }
+
+            if (deleterepos)
+            {
+                Properties.Settings.Default.BehaviorRepos.Clear();
+                Properties.Settings.Default.MiniModeRepos.Clear();
+                Properties.Settings.Default.Save();
+                listrepos = true;
             }
 
             if (listrepos)
