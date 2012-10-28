@@ -35,10 +35,13 @@ namespace CombotPatcher
             {
                 GitHubShaTree = JsonConvert.DeserializeObject<ShaTree>(File.ReadAllText(path + "\\" + repo + "-ShaTree.JSON"));
             }
-            else
+            
+            if(GitHubShaTree == null)
             {
                 GitHubShaTree = new ShaTree();
             }
+
+            
 
             if (tag.IndexOf('/') > 0)
             {
