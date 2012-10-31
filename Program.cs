@@ -223,7 +223,11 @@ namespace CombotPatcher
 
                 try
                 {
-                    GithubPatcher.Patch("Combot", Properties.Settings.Default.CombotBranch, @"Scripts\combot");
+                    
+                    List<String> defines = new List<string>();
+                    defines.Add("#define COMBOT_BRANCH " + Properties.Settings.Default.CombotBranch);
+                    defines.Add("#define COMBOT_VERSION " + GithubPatcher.Patch("Combot", Properties.Settings.Default.CombotBranch, @"Scripts\combot"));
+                    File.WriteAllLines(InnerSpace.Path + @"\Scripts\combot\temp\version.iss", defines.ToArray());
                 }
                 catch (InvalidBranchException ex)
                 {

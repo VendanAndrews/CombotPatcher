@@ -21,7 +21,7 @@ namespace CombotPatcher
         static ShaTree GitHubShaTree;
         static Boolean Updated;
 
-        public static void Patch(string repo, string tag, string path)
+        public static String Patch(string repo, string tag, string path)
         {
             Queue<String> repoPaths;
             Updated = false;
@@ -121,6 +121,7 @@ namespace CombotPatcher
 
             File.WriteAllText(path + "\\" + repo + "-ShaTree.JSON", JsonConvert.SerializeObject(GitHubShaTree));
             InnerSpace.Echo(String.Format("{0} {1} Updated in directory {2}", repo, tag, path));
+            return GitHubShaTree.TreeSha;
         }
 
         static void RecursiveTree(String path, JToken Tree, ShaTree ThisShaTree, String repo)
