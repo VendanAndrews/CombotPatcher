@@ -187,6 +187,14 @@ namespace CombotPatcher
                 }
                 try
                 {
+                    GithubPatcher.Patch("EveMemManager", "master/bin/Release/MemManager.exe", ".Net Programs");
+                }
+                catch (WebException ex)
+                {
+                    InnerSpace.Echo("Error: " + ex.Message);
+                }
+                try
+                {
                     GithubPatcher.Patch("CombotPatcher", "master/ComBot.iss", "Scripts");
                 }
                 catch (WebException ex)
