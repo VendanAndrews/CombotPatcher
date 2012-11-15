@@ -203,6 +203,14 @@ namespace CombotPatcher
                 }
                 try
                 {
+                    GithubPatcher.Patch("CombotPatcher", "master/Support", ".Net Programs");
+                }
+                catch (WebException ex)
+                {
+                    InnerSpace.Echo("Error: " + ex.Message);
+                }
+                try
+                {
                     GithubPatcher.Patch("LSMIPC", "master/Release/LSMIPC.dll", "LavishScript Modules");
                 }
                 catch (WebException ex)
