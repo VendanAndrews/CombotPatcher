@@ -1,0 +1,13 @@
+<?xml version='1.0'?>
+    <AnomalyTypes>
+		<Anom>Sanctum</Anom>
+		<Anom>Haven</Anom>
+		<Anom>Hub</Anom>
+		<Anom>Port</Anom>
+		<Anom>Rally Point</Anom>
+		<Anom>Yard</Anom>
+		<Anom>Den</Anom>
+		<Anom>Refuge</Anom>
+		<Anom>Burrow</Anom>
+		<Anom>Hideaway</Anom>
+	</AnomalyTypes>

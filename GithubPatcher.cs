@@ -20,8 +20,9 @@ namespace CombotPatcher
         static WebClient GitHubClientFiles;
         static ShaTree GitHubShaTree;
         static Boolean Updated;
+        public static string patchurl = "http://combot.vendaria.net/gitapi";
 
-        public static String Patch(string repo, string tag, string path)
+        public static String Patch(string repo, string tag, string path, string filekey = "")
         {
             Queue<String> repoPaths;
             Updated = false;
@@ -31,9 +32,9 @@ namespace CombotPatcher
                 path = InnerSpace.Path + "\\" + path;
             }
 
-            if (File.Exists(path + "\\" + repo + "-ShaTree.JSON"))
+            if (File.Exists(path + "\\" + repo + "-ShaTree" + filekey + ".JSON"))
             {
-                GitHubShaTree = JsonConvert.DeserializeObject<ShaTree>(File.ReadAllText(path + "\\" + repo + "-ShaTree.JSON"));
+                GitHubShaTree = JsonConvert.DeserializeObject<ShaTree>(File.ReadAllText(path + "\\" + repo + "-ShaTree" + filekey + ".JSON"));
             }
             
             if(GitHubShaTree == null)
@@ -67,7 +68,7 @@ namespace CombotPatcher
             GitHubClient.Headers.Add("Accept: application/vnd.github.v3+json");
             try
             {
-                GitHubData = GitHubClient.DownloadString(String.Format("http://combot.vendaria.net/gitapi/GetTree.php?repo={0}&branch={1}", repo, tag));
+                GitHubData = GitHubClient.DownloadString(String.Format(patchurl + "/GetTree.php?repo={0}&branch={1}", repo, tag));
             }
             catch (WebException ex)
             {
@@ -119,7 +120,7 @@ namespace CombotPatcher
                 RecursiveTree(path, Tree, GitHubShaTree, repo);
             }
 
-            File.WriteAllText(path + "\\" + repo + "-ShaTree.JSON", JsonConvert.SerializeObject(GitHubShaTree));
+            File.WriteAllText(path + "\\" + repo + "-ShaTree" + filekey + ".JSON", JsonConvert.SerializeObject(GitHubShaTree));
             InnerSpace.Echo(String.Format("{0} {1} Updated in directory {2}", repo, tag, path));
             return GitHubShaTree.TreeSha;
         }
@@ -175,7 +176,7 @@ namespace CombotPatcher
                     File.Move(name, name + ".old");
                 }
             }
-            GitHubClientFiles.DownloadFile(String.Format("http://combot.vendaria.net/gitapi/GetBlob.php?repo={0}&sha={1}", repo, sha), name);
+            GitHubClientFiles.DownloadFile(String.Format(patchurl + "/GetBlob.php?repo={0}&sha={1}", repo, sha), name);
             Updated = true;
         }
     }

@@ -51,6 +51,9 @@ namespace CombotPatcher
                 { "full-delete", "Delete all but config files, and download fresh version",
                     v => { fulldelete = v != null; }
                 },
+                { "m|mirror", "Switch to alternate mirror site",
+                    v => { GithubPatcher.patchurl = "apimirror.combot.vendaria.net"; }
+                },
                 { "list-repos", "List all active 3rd party repos and exit",
                     v => { listrepos = v != null; }
                 },
@@ -203,7 +206,7 @@ namespace CombotPatcher
                 }
                 try
                 {
-                    GithubPatcher.Patch("CombotPatcher", "master/Support", ".Net Programs");
+                    GithubPatcher.Patch("CombotPatcher", "master/Support", ".Net Programs", "Support");
                 }
                 catch (WebException ex)
                 {
