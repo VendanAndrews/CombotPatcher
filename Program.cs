@@ -206,7 +206,7 @@ namespace CombotPatcher
                 }
                 try
                 {
-                    GithubPatcher.Patch("CombotPatcher", "master/Support", ".Net Programs", "Support");
+                    GithubPatcher.Patch("WarpToAnom", "master/WarpToAnom/bin/Release", ".Net Programs");
                 }
                 catch (WebException ex)
                 {
